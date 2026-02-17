@@ -22,6 +22,8 @@ Drop the mod JAR into your `mods/` folder.
 
 ### Ender Creeper
 
+![Ender Creeper](images/Ender_Creeper.png)
+
 A terrifying hybrid combining the explosive nature of Creepers with the teleportation abilities of Endermen.
 
 **Behavior:**
@@ -61,6 +63,8 @@ A terrifying hybrid combining the explosive nature of Creepers with the teleport
 
 ### Nether Creeper
 
+![Nether Creeper](images/Nether_Creeper.png)
+
 A lava-dwelling creeper that walks on lava like a Strider and has temperature-based mechanics.
 
 **Behavior:**
@@ -98,6 +102,8 @@ A lava-dwelling creeper that walks on lava like a Strider and has temperature-ba
 ---
 
 ### Wither Creeper
+
+![Wither Creeper](images/Wither_Creeper.png)
 
 A dark creeper that lurks in the Nether and inflicts the Wither effect on explosion.
 
