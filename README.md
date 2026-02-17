@@ -1,263 +1,143 @@
+# Creeping Creepers
 
+A Minecraft Forge mod that adds unique Creeper variants with special abilities to your world.
 
+## About
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# Creeping Creepers Mod
-
-A Minecraft Forge mod that adds unique Creeper variants with special abilities!
-
-## Overview
-
-**Creeping Creepers** introduces terrifying new Creeper variants to Minecraft. The first variant is the **Ender Creeper** - a hybrid mob combining the explosive nature of Creepers with the teleportation abilities of Endermen.
+**Creeping Creepers** introduces three new Creeper variants, each themed around a different dimension and featuring unique mechanics that make encounters with them distinct and challenging. All stats are fully configurable via `config/creepingcreepers-common.toml`.
 
 ## Requirements
 
 - **Minecraft**: 1.21.11
-- **Forge**: 52.0.40+
+- **Forge**: 61.0.6+
 - **Java**: 21+
-- **IDE**: IntelliJ IDEA (recommended) or Eclipse
 
-## Installation for Development
+## Installation
 
-1. Clone or download this repository
-2. Open in IntelliJ IDEA
-3. Import as Gradle project
-4. Run `./gradlew genIntellijRuns` (or `./gradlew genEclipseRuns` for Eclipse)
-5. Refresh Gradle project
-6. Run the `runClient` configuration
+Drop the mod JAR into your `mods/` folder.
 
-## Building
+---
 
-```bash
-./gradlew build
-```
+## Creeper Variants
 
-The compiled mod JAR will be in `build/libs/`
+### Ender Creeper
 
-## The Ender Creeper
+A terrifying hybrid combining the explosive nature of Creepers with the teleportation abilities of Endermen.
 
-### Behavior
+**Behavior:**
+- Hostile mob that detects players within 16 blocks (14 when crouching)
+- Teleports randomly when idle, alternating between walking and teleporting like an Enderman
+- Teleports toward targets when farther than 13 blocks away, closing the gap instantly
+- Dodges all projectiles by teleporting — arrows and other projectiles cannot hit it
+- When hit by melee attacks, has a 50% chance to teleport away
+- Flees from cats and ocelots within 6 blocks
+- Takes damage from water, rain, and splash water bottles (like an Enderman)
+- Prevents nearby players from sleeping
 
-The Ender Creeper is a neutral mob that becomes hostile when you look directly at it (like an Enderman).
+**Explosion:**
+- Entities caught in the explosion are teleported randomly using Chorus Fruit-style logic (up to 8 blocks away)
+- Spawns reverse portal particles at the explosion center
 
-| Trait | Description |
-|-------|-------------|
-| **Neutral** | Won't attack unless provoked by staring |
-| **Teleportation** | Teleports to reposition, alternating with walking |
-| **Explosion** | Explodes like a Creeper when close to target |
-| **Dragon's Breath** | Spawns a damaging cloud on explosion |
-| **Player Teleport** | Players hit by explosion are teleported to cloud center |
-| **Water Weakness** | Takes damage from water and rain |
-| **Cat Fear** | Runs away from cats and ocelots |
+**Stats (defaults):**
 
-### Stats (Configurable)
-
-| Stat | Default Value |
-|------|---------------|
-| Health | 30 HP |
+| Stat | Value |
+|------|-------|
+| Health | 20 HP |
 | Speed | 0.28 |
-| Attack Damage | 7.0 |
-| Explosion Radius | 4 blocks |
+| Explosion Radius | 3 blocks |
 | Fuse Time | 1.5 seconds |
 | Teleport Cooldown | 2 seconds |
-| Teleport Range | 32 blocks |
 
-### Spawning
+**Spawning:**
+- **Overworld** — same conditions as Endermen (dark areas)
+- **Nether** — 10% spawn chance per attempt
+- **End** — 20% spawn chance per attempt
 
-- Spawns in the same conditions as Endermen
-- Requires light level 0 (default)
-- Spawn weight: 5 (configurable)
-- Spawns alone or in pairs
-
-### Drops
-
+**Drops:**
 - Gunpowder (0-2, affected by Looting)
 - Ender Pearl (0-1, affected by Looting)
 
+---
+
+### Nether Creeper
+
+A lava-dwelling creeper that walks on lava like a Strider and has temperature-based mechanics.
+
+**Behavior:**
+- Walks on lava surfaces with full movement speed, similar to a Strider
+- When out of lava for 10 seconds, becomes **cold**: shivers, moves slower, and its explosion is reduced by 80%
+- Warms back up 4x faster than it cools down when it returns to lava
+- Actively seeks out lava when not near a target
+- Detects players within 16 blocks (14 blocks if the player is riding a Strider)
+- Flees from cats and ocelots within 6 blocks
+- Immune to fire and lava damage
+- Sensitive to water — takes damage from rain and splash water bottles
+- Explosion sets all nearby entities on fire for 3 seconds and spawns flame particles
+- Takes gradual freeze damage when cold (1 HP per second after a 3-second delay)
+
+**Stats (defaults):**
+
+| Stat | Value |
+|------|-------|
+| Health | 20 HP |
+| Speed (Warm) | 0.25 |
+| Speed (Cold) | 0.15 |
+| Explosion Radius (Warm) | 3 blocks |
+| Explosion Radius (Cold) | 0.6 blocks (80% reduction) |
+| Fuse Time | 1.5 seconds |
+
+**Spawning:**
+- **Nether only** — near lava seas at Y level 40 or below
+- Can spawn in lava, above lava, or on solid ground within 4 blocks of lava
+- 20% spawn chance per attempt
+
+**Drops:**
+- Gunpowder (0-2, affected by Looting)
+- Blaze Powder (0-1, affected by Looting)
+
+---
+
+### Wither Creeper
+
+A dark creeper that lurks in the Nether and inflicts the Wither effect on explosion.
+
+**Behavior:**
+- Behaves like a standard Creeper — chases players and explodes on approach
+- Requires line of sight to begin swelling (unlike vanilla Creepers)
+- Flees from cats and ocelots within 6 blocks
+- Immune to fire and the Wither effect
+- Explosion applies Wither I to all entities within the blast radius for 10 seconds
+- Explosion spawns dark smoke particles
+
+**Stats (defaults):**
+
+| Stat | Value |
+|------|-------|
+| Health | 20 HP |
+| Speed | 0.25 |
+| Explosion Radius | 3 blocks |
+| Fuse Time | 1.5 seconds |
+| Wither Duration | 10 seconds |
+| Wither Level | Wither I |
+
+**Spawning:**
+- **Nether only** — anywhere in the dimension, standard monster spawn rules
+- 23% spawn chance per attempt
+
+**Drops:**
+- Gunpowder (0-2, affected by Looting)
+- Coal (0-1, affected by Looting)
+
+---
+
 ## Configuration
 
-All values are configurable in `config/creepingcreepers-common.toml`:
-
-```toml
-[ender_creeper]
-    [ender_creeper.stats]
-        health = 30.0
-        movement_speed = 0.28
-        attack_damage = 7.0
-    
-    [ender_creeper.explosion]
-        explosion_radius = 4
-        fuse_time = 30
-    
-    [ender_creeper.teleportation]
-        teleport_cooldown = 40
-        teleport_range = 32
-        min_teleport_distance = 4
-    
-    [ender_creeper.dragons_breath]
-        duration = 100
-        radius = 3.0
-        amplifier = 1
-    
-    [ender_creeper.environmental]
-        water_damage = 1.0
-        afraid_of_cats = true
-    
-    [ender_creeper.spawning]
-        spawn_weight = 5
-        min_group_size = 1
-        max_group_size = 2
-        max_light_level = 0
-    
-    [ender_creeper.aggro]
-        stare_range = 64.0
-        anger_time = 400
-```
-
-## Project Structure
-
-```
-creepingcreepers/
-├── src/main/java/com/creepingcreepers/
-│   ├── CreepingCreepersMod.java      # Main mod class
-│   ├── config/
-│   │   └── CreepingCreepersConfig.java  # All config values
-│   ├── entity/
-│   │   ├── base/
-│   │   │   └── AbstractVariantCreeper.java  # Base class for variants
-│   │   └── endercreeper/
-│   │       └── EnderCreeperEntity.java  # Ender Creeper implementation
-│   ├── registry/
-│   │   ├── ModEntities.java          # Entity registration
-│   │   └── ModItems.java             # Item (spawn egg) registration
-│   ├── ai/goal/
-│   │   ├── EnderCreeperSwellGoal.java  # Explosion charging
-│   │   └── TeleportToTargetGoal.java   # Teleportation AI
-│   ├── client/
-│   │   ├── ClientModEvents.java      # Client-side registration
-│   │   ├── model/
-│   │   │   └── EnderCreeperModel.java  # Entity model
-│   │   └── renderer/
-│   │       └── EnderCreeperRenderer.java  # Entity renderer
-│   └── event/
-│       └── ModEventHandlers.java     # Event handlers
-├── src/main/resources/
-│   ├── META-INF/mods.toml           # Mod metadata
-│   ├── pack.mcmeta                   # Resource pack info
-│   ├── assets/creepingcreepers/
-│   │   ├── lang/en_us.json          # Translations
-│   │   ├── models/item/             # Item models
-│   │   └── textures/entity/         # Entity textures
-│   └── data/creepingcreepers/
-│       └── loot_tables/entities/    # Loot tables
-├── build.gradle                      # Build configuration
-├── gradle.properties                 # Project properties
-└── settings.gradle                   # Gradle settings
-```
-
-## Adding New Creeper Variants
-
-The mod is designed for easy extension. To add a new variant:
-
-### 1. Create the Entity Class
-
-```java
-public class MyNewCreeperEntity extends AbstractVariantCreeper {
-    
-    public MyNewCreeperEntity(EntityType<? extends Monster> type, Level level) {
-        super(type, level);
-    }
-    
-    @Override
-    protected float getExplosionRadius() {
-        return MyConfig.EXPLOSION_RADIUS.get().floatValue();
-    }
-    
-    @Override
-    protected void createCustomExplosionEffects() {
-        // Add your special effects here
-    }
-    
-    public static AttributeSupplier.Builder createAttributes() {
-        return Monster.createMonsterAttributes()
-            .add(Attributes.MAX_HEALTH, 20.0)
-            .add(Attributes.MOVEMENT_SPEED, 0.25);
-    }
-}
-```
-
-### 2. Register the Entity (ModEntities.java)
-
-```java
-public static final RegistryObject<EntityType<MyNewCreeperEntity>> MY_CREEPER = 
-    ENTITY_TYPES.register("my_creeper", () ->
-        EntityType.Builder.<MyNewCreeperEntity>of(MyNewCreeperEntity::new, MobCategory.MONSTER)
-            .sized(0.6F, 1.7F)
-            .clientTrackingRange(8)
-            .build("my_creeper")
-    );
-```
-
-### 3. Register Attributes (ModEntities.java)
-
-```java
-public static void registerAttributes(EntityAttributeCreationEvent event) {
-    event.put(MY_CREEPER.get(), MyNewCreeperEntity.createAttributes().build());
-}
-```
-
-### 4. Create a Spawn Egg (ModItems.java)
-
-```java
-public static final RegistryObject<Item> MY_CREEPER_SPAWN_EGG = ITEMS.register(
-    "my_creeper_spawn_egg",
-    () -> new ForgeSpawnEggItem(ModEntities.MY_CREEPER, 0xPRIMARY, 0xSECONDARY, new Item.Properties())
-);
-```
-
-### 5. Add Config Values
-
-Add your balance values to `CreepingCreepersConfig.java`
-
-### 6. Create Resources
-
-- Texture: `assets/creepingcreepers/textures/entity/my_creeper.png`
-- Lang: Add entries to `en_us.json`
-- Model: Create `my_creeper_spawn_egg.json` in models/item/
-- Loot Table: Create `my_creeper.json` in data/loot_tables/entities/
-
-### 7. Create Renderer and Model
-
-Create client-side classes in the `client` package following the existing patterns.
+All values are configurable in `config/creepingcreepers-common.toml`. The config file is generated on first launch and supports hot-reloading — changes take effect immediately when the file is saved.
 
 ## License
 
-MIT License
+All Rights Reserved
 
 ## Credits
 
-- Developed by CreepingCreepersTeam
-- Built with Minecraft Forge
-- Inspired by vanilla Minecraft's Creeper and Enderman mobs
+Developed by Chompslabs
