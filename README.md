@@ -142,7 +142,7 @@ All values are configurable in `config/creepingcreepers-common.toml`. The config
 
 ## License
 
-All Rights Reserved
+MIT License
 
 ## Credits
 
