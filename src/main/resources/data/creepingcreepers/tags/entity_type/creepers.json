@@ -1,0 +1,8 @@
+{
+  "replace": false,
+  "values": [
+    "creepingcreepers:ender_creeper",
+    "creepingcreepers:wither_creeper",
+    "creepingcreepers:nether_creeper"
+  ]
+}

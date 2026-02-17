@@ -1,0 +1,36 @@
+{
+  "entity.creepingcreepers.ender_creeper": "Ender Creeper",
+  "item.creepingcreepers.ender_creeper_spawn_egg": "Ender Creeper Spawn Egg",
+
+  "entity.creepingcreepers.wither_creeper": "Wither Creeper",
+  "item.creepingcreepers.wither_creeper_spawn_egg": "Wither Creeper Spawn Egg",
+
+  "entity.creepingcreepers.nether_creeper": "Nether Creeper",
+  "item.creepingcreepers.nether_creeper_spawn_egg": "Nether Creeper Spawn Egg",
+
+  "itemGroup.creepingcreepers": "Creeping Creepers",
+
+  "death.attack.enderCreeperExplosion": "%1$s was blown up by an Ender Creeper",
+  "death.attack.enderCreeperExplosion.player": "%1$s was blown up by an Ender Creeper whilst fighting %2$s",
+
+  "death.attack.witherCreeperExplosion": "%1$s was blown up by a Wither Creeper",
+  "death.attack.witherCreeperExplosion.player": "%1$s was blown up by a Wither Creeper whilst fighting %2$s",
+
+  "death.attack.netherCreeperExplosion": "%1$s was blown up by a Nether Creeper",
+  "death.attack.netherCreeperExplosion.player": "%1$s was blown up by a Nether Creeper whilst fighting %2$s",
+
+  "subtitles.entity.ender_creeper.primed": "Ender Creeper hisses",
+  "subtitles.entity.ender_creeper.hurt": "Ender Creeper hurts",
+  "subtitles.entity.ender_creeper.death": "Ender Creeper dies",
+  "subtitles.entity.ender_creeper.explode": "Ender Creeper explodes",
+
+  "subtitles.entity.wither_creeper.primed": "Wither Creeper hisses",
+  "subtitles.entity.wither_creeper.hurt": "Wither Creeper hurts",
+  "subtitles.entity.wither_creeper.death": "Wither Creeper dies",
+  "subtitles.entity.wither_creeper.explode": "Wither Creeper explodes",
+
+  "subtitles.entity.nether_creeper.primed": "Nether Creeper hisses",
+  "subtitles.entity.nether_creeper.hurt": "Nether Creeper hurts",
+  "subtitles.entity.nether_creeper.death": "Nether Creeper dies",
+  "subtitles.entity.nether_creeper.explode": "Nether Creeper explodes"
+}
