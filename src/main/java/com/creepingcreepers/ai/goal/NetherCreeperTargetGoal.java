@@ -4,12 +4,15 @@
  * ============================================================================
  *
  * WHAT THIS FILE DOES:
- * Implements player targeting for the Nether Creeper with special handling
- * for players riding Striders.
+ * Implements continuous player targeting for the Nether Creeper with special
+ * handling for players riding Striders.
  *
  * BEHAVIOR:
  * - Targets players within 16-block radius
  * - Targets players riding Striders within 14-block radius (reduced range)
+ * - Sets target immediately with no delay — aggressive behavior
+ * - Keeps running continuously while player remains in range
+ * - Clears target when player escapes range (via TargetGoal.stop())
  * - Does NOT target other mobs (only retaliates via HurtByTargetGoal)
  * - Only targets survival/adventure mode players
  *
@@ -24,6 +27,7 @@ package com.creepingcreepers.ai.goal;
 
 import com.creepingcreepers.config.CreepingCreepersConfig;
 import com.creepingcreepers.entity.nethercreeper.NetherCreeperEntity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.goal.target.TargetGoal;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.AABB;
@@ -33,10 +37,10 @@ import java.util.Comparator;
 import java.util.List;
 
 /**
- * AI goal that targets nearby players, with special handling for Strider riders.
+ * Continuous AI goal that targets nearby players, with special handling for Strider riders.
  *
- * Players on foot are detected at 16 blocks, while players riding Striders
- * are only detected at 14 blocks.
+ * Sets target immediately on detection and stays running while the player is in range.
+ * TargetGoal.stop() clears the target when the player truly escapes.
  */
 public class NetherCreeperTargetGoal extends TargetGoal {
 
@@ -46,20 +50,10 @@ public class NetherCreeperTargetGoal extends TargetGoal {
     private final NetherCreeperEntity netherCreeper;
 
     /**
-     * The player we're considering targeting.
+     * Multiplier applied to detection range for canContinueToUse().
+     * Slight hysteresis prevents rapid start/stop oscillation at the edge of range.
      */
-    @Nullable
-    private Player pendingTarget;
-
-    /**
-     * Brief delay before acquiring target (gives player a moment to react).
-     */
-    private int targetingDelay;
-
-    /**
-     * Ticks before target is acquired.
-     */
-    private static final int TARGETING_DELAY_TICKS = 5;
+    private static final double CONTINUE_RANGE_MULTIPLIER = 1.5;
 
     /**
      * Creates a new target goal for the Nether Creeper.
@@ -73,19 +67,55 @@ public class NetherCreeperTargetGoal extends TargetGoal {
 
     /**
      * Checks if this goal should start executing.
-     * Looks for players within detection range.
+     * Finds the nearest valid player within detection range and sets them as target immediately.
      *
-     * @return true if a valid target is found
+     * @return true if a valid target was found and set
      */
     @Override
     public boolean canUse() {
-        // Use the larger detection range for initial search
+        Player target = this.findNearestTarget();
+        if (target != null) {
+            this.mob.setTarget(target);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Checks if this goal should continue executing.
+     * Keeps running while the current target is alive and within range.
+     * When this returns false, TargetGoal.stop() is called which clears the target.
+     *
+     * @return true if the target is still valid and in range
+     */
+    @Override
+    public boolean canContinueToUse() {
+        LivingEntity target = this.mob.getTarget();
+
+        if (!(target instanceof Player player)) {
+            return false;
+        }
+
+        if (!player.isAlive() || player.isSpectator() || player.isCreative()) {
+            return false;
+        }
+
+        // Use a slightly extended range to avoid rapid start/stop at the boundary
+        double detectionRange = this.netherCreeper.getDetectionRangeForPlayer(player);
+        return this.netherCreeper.distanceTo(player) <= detectionRange * CONTINUE_RANGE_MULTIPLIER;
+    }
+
+    /**
+     * Finds the nearest valid player within detection range.
+     *
+     * @return The nearest valid player, or null if none found
+     */
+    @Nullable
+    private Player findNearestTarget() {
         double maxRange = CreepingCreepersConfig.NETHER_CREEPER_PLAYER_DETECTION_RANGE.get();
 
-        // Create search box
         AABB searchBox = this.netherCreeper.getBoundingBox().inflate(maxRange, maxRange / 2.0, maxRange);
 
-        // Get all nearby players (not spectator, not creative)
         List<Player> nearbyPlayers = this.netherCreeper.level().getEntitiesOfClass(
                 Player.class,
                 searchBox,
@@ -93,91 +123,19 @@ public class NetherCreeperTargetGoal extends TargetGoal {
         );
 
         if (nearbyPlayers.isEmpty()) {
-            return false;
+            return null;
         }
 
-        // Sort by distance (closest first)
+        // Sort by distance — always target the closest player
         nearbyPlayers.sort(Comparator.comparingDouble(this.netherCreeper::distanceTo));
 
-        // Find the closest valid target
         for (Player player : nearbyPlayers) {
-            // Get the appropriate detection range for this player
             double detectionRange = this.netherCreeper.getDetectionRangeForPlayer(player);
-            double distance = this.netherCreeper.distanceTo(player);
-
-            if (distance <= detectionRange) {
-                this.pendingTarget = player;
-                return true;
+            if (this.netherCreeper.distanceTo(player) <= detectionRange) {
+                return player;
             }
         }
 
-        this.pendingTarget = null;
-        return false;
-    }
-
-    /**
-     * Called when the goal starts executing.
-     */
-    @Override
-    public void start() {
-        this.targetingDelay = TARGETING_DELAY_TICKS;
-    }
-
-    /**
-     * Called when the goal stops executing.
-     */
-    @Override
-    public void stop() {
-        this.pendingTarget = null;
-        super.stop();
-    }
-
-    /**
-     * Checks if this goal should continue executing.
-     *
-     * @return true if target is still valid and in range
-     */
-    @Override
-    public boolean canContinueToUse() {
-        if (this.pendingTarget == null) {
-            return false;
-        }
-
-        // Stop if player is no longer valid
-        if (!this.pendingTarget.isAlive() || this.pendingTarget.isSpectator() || this.pendingTarget.isCreative()) {
-            return false;
-        }
-
-        // Stop if we've already set this player as our main target
-        if (this.netherCreeper.getTarget() == this.pendingTarget) {
-            return false;
-        }
-
-        // Check if player is still in range (use their specific range)
-        double detectionRange = this.netherCreeper.getDetectionRangeForPlayer(this.pendingTarget);
-        double distance = this.netherCreeper.distanceTo(this.pendingTarget);
-
-        return distance <= detectionRange;
-    }
-
-    /**
-     * Called each tick while the goal is active.
-     * Counts down the targeting delay, then sets the target.
-     */
-    @Override
-    public void tick() {
-        if (this.pendingTarget == null) {
-            return;
-        }
-
-        // Count down targeting delay
-        if (this.targetingDelay > 0) {
-            this.targetingDelay--;
-            return;
-        }
-
-        // Delay expired - acquire target
-        this.netherCreeper.setTarget(this.pendingTarget);
-        this.pendingTarget = null;
+        return null;
     }
 }

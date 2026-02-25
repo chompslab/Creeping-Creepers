@@ -8,7 +8,7 @@
   "spawners": [
     {
       "type": "creepingcreepers:ender_creeper",
-      "weight": 5,
+      "weight": 25,
       "minCount": 1,
       "maxCount": 2
     }

@@ -30,9 +30,12 @@ package com.creepingcreepers.registry;
 
 import com.creepingcreepers.CreepingCreepersMod;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.SpawnEggItem;
 import net.minecraftforge.eventbus.api.bus.BusGroup;
 import net.minecraftforge.registries.DeferredRegister;
@@ -103,13 +106,42 @@ public class ModItems {
             )
     );
 
+    // =========================================================================
+    // CREATIVE TAB
+    // =========================================================================
+
     /**
-     * Registers the DeferredRegister to the mod bus group.
+     * Deferred register for the mod's creative mode tab.
+     */
+    public static final DeferredRegister<CreativeModeTab> CREATIVE_TABS =
+            DeferredRegister.create(Registries.CREATIVE_MODE_TAB, CreepingCreepersMod.MOD_ID);
+
+    /**
+     * The "Creeping Creepers" creative tab.
+     * Ensures the mod name shows correctly in item tooltips instead of
+     * the vanilla "Spawn Egg" tab label.
+     */
+    public static final RegistryObject<CreativeModeTab> CREEPING_CREEPERS_TAB = CREATIVE_TABS.register(
+            "main",
+            () -> CreativeModeTab.builder()
+                    .title(Component.translatable("itemGroup.creepingcreepers"))
+                    .icon(() -> new ItemStack(ENDER_CREEPER_SPAWN_EGG.get()))
+                    .displayItems((params, output) -> {
+                        output.accept(ENDER_CREEPER_SPAWN_EGG.get());
+                        output.accept(WITHER_CREEPER_SPAWN_EGG.get());
+                        output.accept(NETHER_CREEPER_SPAWN_EGG.get());
+                    })
+                    .build()
+    );
+
+    /**
+     * Registers the DeferredRegisters to the mod bus group.
      * Called from the main mod class constructor.
      *
      * @param modBusGroup The mod bus group from the mod constructor
      */
     public static void register(BusGroup modBusGroup) {
         ITEMS.register(modBusGroup);
+        CREATIVE_TABS.register(modBusGroup);
     }
 }

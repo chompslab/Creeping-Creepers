@@ -10,7 +10,7 @@
   "spawners": [
     {
       "type": "creepingcreepers:wither_creeper",
-      "weight": 8,
+      "weight": 20,
       "minCount": 1,
       "maxCount": 2
     }

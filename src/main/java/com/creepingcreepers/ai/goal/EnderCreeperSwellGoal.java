@@ -37,6 +37,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.goal.Goal;
 
 import javax.annotation.Nullable;
+import java.util.EnumSet;
 
 /**
  * AI goal that makes the Ender Creeper swell and explode when close to target.
@@ -84,8 +85,8 @@ public class EnderCreeperSwellGoal extends Goal {
      */
     public EnderCreeperSwellGoal(EnderCreeperEntity creeper) {
         this.creeper = creeper;
-        // No flags set - like vanilla creeper
-        // Creeper keeps moving toward target while swelling
+        // MOVE flag stops other movement goals while swelling, like vanilla creeper
+        this.setFlags(EnumSet.of(Goal.Flag.MOVE));
     }
 
     /**
@@ -125,6 +126,8 @@ public class EnderCreeperSwellGoal extends Goal {
      */
     @Override
     public void start() {
+        // Stop navigation so the creeper stands still while swelling
+        this.creeper.getNavigation().stop();
         // Start swelling
         this.creeper.setSwellDir(1);
     }
@@ -195,7 +198,7 @@ public class EnderCreeperSwellGoal extends Goal {
             this.creeper.setSwellDir(-1);
         } else {
             // Target in range (within 7 blocks) - keep swelling
-            // NO navigation stop - creeper keeps moving toward target like vanilla
+            // Creeper stays still while swelling (Goal.Flag.MOVE blocks movement goals)
             this.creeper.setSwellDir(1);
         }
     }

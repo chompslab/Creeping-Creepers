@@ -10,7 +10,7 @@
   "spawners": [
     {
       "type": "creepingcreepers:nether_creeper",
-      "weight": 80,
+      "weight": 120,
       "minCount": 1,
       "maxCount": 3
     }

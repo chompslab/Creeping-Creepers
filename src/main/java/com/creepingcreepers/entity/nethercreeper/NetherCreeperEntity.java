@@ -100,7 +100,7 @@ public class NetherCreeperEntity extends AbstractVariantCreeper {
     private static final double LAVA_SURFACE_BUOYANCY = 0.01D;
 
     /** Maximum Y level for spawning (lava seas are at Y=31). */
-    private static final int MAX_SPAWN_Y_LEVEL = 40;
+    private static final int MAX_SPAWN_Y_LEVEL = 36;
 
     /** Radius to check for nearby lava when spawning on solid ground. */
     private static final int NEAR_LAVA_SPAWN_RADIUS = 4;
@@ -271,8 +271,28 @@ public class NetherCreeperEntity extends AbstractVariantCreeper {
         // Priority 1: Start swelling when close enough to target
         this.goalSelector.addGoal(1, new NetherCreeperSwellGoal(this));
 
-        // Priority 2: Seek lava when not in lava (to stay warm)
-        this.goalSelector.addGoal(2, new NetherCreeperGoToLavaGoal(this, 1.0));
+        // Priority 2: Chase and explode at all cost when warm.
+        // When cold: only commit if player is within 6 blocks (explosion still hurts them).
+        // Beyond 6 blocks while cold, step aside so lava goal takes over.
+        this.goalSelector.addGoal(2, new MeleeAttackGoal(this, 1.0, false) {
+            private static final double COLD_COMMIT_RANGE_SQ = 36.0; // 6 blocks squared
+            @Override
+            public boolean canUse() {
+                if (NetherCreeperEntity.this.isCold()) {
+                    LivingEntity target = NetherCreeperEntity.this.getTarget();
+                    return target != null && NetherCreeperEntity.this.distanceToSqr(target) <= COLD_COMMIT_RANGE_SQ;
+                }
+                return super.canUse();
+            }
+            @Override
+            public boolean canContinueToUse() {
+                if (NetherCreeperEntity.this.isCold()) {
+                    LivingEntity target = NetherCreeperEntity.this.getTarget();
+                    return target != null && NetherCreeperEntity.this.distanceToSqr(target) <= COLD_COMMIT_RANGE_SQ;
+                }
+                return super.canContinueToUse();
+            }
+        });
 
         // Priority 3: Run away from cats and ocelots
         float fleeSpeed = CreepingCreepersConfig.NETHER_CREEPER_FLEE_SPEED.get().floatValue();
@@ -280,8 +300,8 @@ public class NetherCreeperEntity extends AbstractVariantCreeper {
         this.goalSelector.addGoal(3, new AvoidEntityGoal<>(this, Ocelot.class, catFearRange, 1.0, fleeSpeed));
         this.goalSelector.addGoal(3, new AvoidEntityGoal<>(this, Cat.class, catFearRange, 1.0, fleeSpeed));
 
-        // Priority 4: Move toward target
-        this.goalSelector.addGoal(4, new MeleeAttackGoal(this, 1.0, false));
+        // Priority 4: Seek lava when idle, or when cold and player is out of commit range
+        this.goalSelector.addGoal(4, new NetherCreeperGoToLavaGoal(this, 1.0));
 
         // Priority 5: Wander around when idle (don't avoid water in Nether)
         this.goalSelector.addGoal(5, new RandomStrollGoal(this, 0.8));
@@ -458,6 +478,8 @@ public class NetherCreeperEntity extends AbstractVariantCreeper {
 
     /**
      * Sets the cold state.
+     * Temperature affects explosion power, movement speed, and chase commitment range,
+     * but goal priorities remain static — the MeleeAttackGoal handles cold logic internally.
      *
      * @param cold true to set cold, false to set warm
      */

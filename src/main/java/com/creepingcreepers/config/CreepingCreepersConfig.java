@@ -316,7 +316,7 @@ public class CreepingCreepersConfig {
         
         ENDER_CREEPER_HEALTH = BUILDER
                 .comment("Maximum health points (vanilla Creeper: 20, Enderman: 40)")
-                .defineInRange("health", 20.0, 1.0, 1000.0);
+                .defineInRange("health", 14.0, 1.0, 1000.0);
         
         ENDER_CREEPER_SPEED = BUILDER
                 .comment("Movement speed (vanilla Creeper: 0.25, Enderman: 0.3)")
