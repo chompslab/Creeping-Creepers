@@ -32,6 +32,7 @@ A terrifying hybrid combining the explosive nature of Creepers with the teleport
 - Teleports toward targets when farther than 13 blocks away, closing the gap instantly
 - Dodges all projectiles by teleporting — arrows and other projectiles cannot hit it
 - When hit by melee attacks, has a 50% chance to teleport away
+- **Stops moving and holds position while its fuse is counting down** — like a vanilla Creeper
 - Flees from cats and ocelots within 6 blocks
 - Takes damage from water, rain, and splash water bottles (like an Enderman)
 - Prevents nearby players from sleeping
@@ -44,15 +45,15 @@ A terrifying hybrid combining the explosive nature of Creepers with the teleport
 
 | Stat | Value |
 |------|-------|
-| Health | 20 HP |
+| Health | 14 HP (killable in 2 diamond sword swings) |
 | Speed | 0.28 |
 | Explosion Radius | 3 blocks |
 | Fuse Time | 1.5 seconds |
 | Teleport Cooldown | 2 seconds |
 
 **Spawning:**
-- **Overworld** — same conditions as Endermen (dark areas)
-- **Nether** — 10% spawn chance per attempt
+- **Overworld** — same conditions as Endermen (dark areas); increased spawn rate
+- **Nether** — increased spawn rate
 - **End** — 20% spawn chance per attempt
 
 **Drops:**
@@ -68,10 +69,12 @@ A terrifying hybrid combining the explosive nature of Creepers with the teleport
 A lava-dwelling creeper that walks on lava like a Strider and has temperature-based mechanics.
 
 **Behavior:**
-- Walks on lava surfaces with full movement speed, similar to a Strider
-- When out of lava for 10 seconds, becomes **cold**: shivers, moves slower, and its explosion is reduced by 80%
+- Walks on lava surfaces with full movement speed, similar to a Strider; wanders on lava when idle
+- **Aggressively chases players** — will leave lava to pursue players on land or in lava
+- When **warm**: prioritizes chasing and exploding at all cost
+- When **cold** (out of lava for 10 seconds): abandons the chase and retreats to lava — unless the player is within 6 blocks, in which case it commits to the explosion regardless
 - Warms back up 4x faster than it cools down when it returns to lava
-- Actively seeks out lava when not near a target
+- When cold: shivers, moves slower, and explosion is reduced by 80%
 - Detects players within 16 blocks (14 blocks if the player is riding a Strider)
 - Flees from cats and ocelots within 6 blocks
 - Immune to fire and lava damage
@@ -91,7 +94,7 @@ A lava-dwelling creeper that walks on lava like a Strider and has temperature-ba
 | Fuse Time | 1.5 seconds |
 
 **Spawning:**
-- **Nether only** — near lava seas at Y level 40 or below
+- **Nether only** — near lava seas at Y level 36 or below; increased spawn rate
 - Can spawn in lava, above lava, or on solid ground within 4 blocks of lava
 - 20% spawn chance per attempt
 
@@ -127,7 +130,7 @@ A dark creeper that lurks in the Nether and inflicts the Wither effect on explos
 | Wither Level | Wither I |
 
 **Spawning:**
-- **Nether only** — anywhere in the dimension, standard monster spawn rules
+- **Nether only** — anywhere in the dimension, standard monster spawn rules; increased spawn rate
 - 23% spawn chance per attempt
 
 **Drops:**
