@@ -20,9 +20,7 @@ build
 # other
 eclipse
 run
-run-data
-temp_src
 
 # Files from Forge MDK
+forge_README.txt
 forge*changelog.txt
-.claude/

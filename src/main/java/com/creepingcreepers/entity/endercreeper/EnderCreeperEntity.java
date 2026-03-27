@@ -226,8 +226,8 @@ public class EnderCreeperEntity extends AbstractVariantCreeper {
         // Set pathfinding penalties - avoid water, lava, and fire like Enderman
         this.setPathfindingMalus(PathType.WATER, -1.0F);
         this.setPathfindingMalus(PathType.LAVA, -1.0F);
-        this.setPathfindingMalus(PathType.DANGER_FIRE, -1.0F);
-        this.setPathfindingMalus(PathType.DAMAGE_FIRE, -1.0F);
+        this.setPathfindingMalus(PathType.FIRE_IN_NEIGHBOR, -1.0F);
+        this.setPathfindingMalus(PathType.FIRE, -1.0F);
     }
     
     // =========================================================================
