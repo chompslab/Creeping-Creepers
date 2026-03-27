@@ -178,6 +178,9 @@ public class EnderCreeperEntity extends AbstractVariantCreeper {
     /** Minimum distance at which the Ender Creeper will NOT teleport toward target. */
     public static final double ENGAGE_TELEPORT_MIN_RANGE = 13.0;
 
+    /** Distance moved per engagement teleport, matching vanilla Enderman teleportTowards. */
+    private static final double ENGAGE_MOVE_DISTANCE = 16.0;
+
     // =========================================================================
     // INSTANCE FIELDS
     // =========================================================================
@@ -730,8 +733,18 @@ public class EnderCreeperEntity extends AbstractVariantCreeper {
     /**
      * Attempts to teleport toward a specific entity for engagement.
      *
-     * Teleports within 12 blocks of the target. Will NOT teleport if already
-     * within 11 blocks of the target. Cannot teleport inside solid blocks.
+     * Uses vanilla Enderman's directional teleport approach (teleportTowards):
+     * calculates a unit vector from the target toward self, then moves
+     * ENGAGE_MOVE_DISTANCE (16) blocks in the opposite direction (toward the
+     * target) with random ±4-block offsets on X/Z and ±8 on Y.
+     *
+     * This mirrors how vanilla Endermen hop between End islands — each attempt
+     * moves 16 blocks in the target's direction, and the random spread gives
+     * multiple landing positions across the target island. If an attempt falls
+     * in the void, the goal retries on the next tick cycle (20 ticks), allowing
+     * progressive island-hopping across larger gaps.
+     *
+     * Will NOT teleport if already within ENGAGE_TELEPORT_MIN_RANGE of the target.
      *
      * @param target The entity to teleport toward
      * @return true if teleportation succeeded
@@ -750,21 +763,30 @@ public class EnderCreeperEntity extends AbstractVariantCreeper {
             return false;
         }
 
-        // Teleport to within 12 blocks of target
-        // Target distance: between 3-11 blocks from target (to stay just outside the 11-block no-teleport zone)
-        double minTeleportDist = ENGAGE_TELEPORT_MIN_DISTANCE;
-        double maxTeleportDist = ENGAGE_TELEPORT_MIN_RANGE - 0.5;
-        double teleportDistance = minTeleportDist + this.random.nextDouble() * (maxTeleportDist - minTeleportDist);
+        // Vanilla Enderman teleportTowards logic:
+        // Build a unit vector from the TARGET toward SELF (same sign convention as
+        // vanilla), then subtract it scaled by moveDistance so the net
+        // displacement is TOWARD the target.
+        //
+        // Cap moveDistance so we never overshoot the target. When the player is
+        // close (14–16 blocks) and standing at their island edge, a full 16-block
+        // move lands past them into void. Capping at (currentDistance -
+        // ENGAGE_TELEPORT_MIN_DISTANCE) ensures the destination always lands at
+        // least ENGAGE_TELEPORT_MIN_DISTANCE blocks short of the target.
+        double moveDistance = Math.min(ENGAGE_MOVE_DISTANCE, currentDistance - ENGAGE_TELEPORT_MIN_DISTANCE);
 
-        // Try multiple positions around the target
+        Vec3 dir = new Vec3(
+                this.getX() - target.getX(),
+                this.getBlockY() - target.getEyeY() + 0.5,
+                this.getZ() - target.getZ()
+        ).normalize();
+
         for (int attempt = 0; attempt < ENGAGE_TELEPORT_ATTEMPTS; attempt++) {
-            // Random angle around the target
-            double angle = this.random.nextDouble() * Math.PI * 2.0;
-            double targetX = target.getX() + Math.cos(angle) * teleportDistance;
-            double targetY = target.getY();
-            double targetZ = target.getZ() + Math.sin(angle) * teleportDistance;
+            double destX = this.getX() + (this.random.nextDouble() - 0.5) * 8.0 - dir.x * moveDistance;
+            double destY = this.getY() + (this.random.nextInt(16) - 8)           - dir.y * moveDistance;
+            double destZ = this.getZ() + (this.random.nextDouble() - 0.5) * 8.0 - dir.z * moveDistance;
 
-            if (this.tryTeleportToEndermanStyle(targetX, targetY, targetZ)) {
+            if (this.tryTeleportToEndermanStyle(destX, destY, destZ)) {
                 return true;
             }
         }
