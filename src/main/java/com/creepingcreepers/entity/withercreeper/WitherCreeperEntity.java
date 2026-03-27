@@ -47,7 +47,6 @@ import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.phys.AABB;
 
 import javax.annotation.Nullable;
-import java.util.List;
 
 /**
  * The Wither Creeper entity.
@@ -176,8 +175,50 @@ public class WitherCreeperEntity extends AbstractVariantCreeper {
     }
 
     /**
-     * Creates the Wither effect cloud when the creeper explodes.
-     * Applies Wither effect to all entities in the explosion radius.
+     * Overrides explode() to apply the Wither effect BEFORE the explosion runs.
+     *
+     * The base class calls level().explode() first, which can kill entities.
+     * Dead entities fail the isAlive() check in createCustomExplosionEffects(),
+     * meaning players killed by the blast would never receive wither.
+     * By collecting and withering entities here — before super.explode() —
+     * we guarantee wither is applied to everyone in range regardless of whether
+     * the explosion is fatal.
+     *
+     * Vanilla's Explosion class damages entities within power * 2 blocks, not
+     * just power blocks. The wither range must match that to cover all entities
+     * that the explosion actually hits.
+     */
+    @Override
+    protected void explode() {
+        if (!this.level().isClientSide() && this.level() instanceof ServerLevel serverLevel) {
+            float radius = this.getExplosionRadius();
+            // Vanilla explosion damages entities within power * 2 blocks.
+            float witherRadius = radius * 2.0f;
+            int witherDuration = CreepingCreepersConfig.WITHER_CREEPER_WITHER_DURATION.get();
+            int witherAmplifier = CreepingCreepersConfig.WITHER_CREEPER_WITHER_AMPLIFIER.get();
+
+            AABB explosionBox = new AABB(
+                    this.getX() - witherRadius, this.getY() - witherRadius, this.getZ() - witherRadius,
+                    this.getX() + witherRadius, this.getY() + witherRadius, this.getZ() + witherRadius
+            );
+
+            serverLevel.getEntitiesOfClass(
+                    LivingEntity.class,
+                    explosionBox,
+                    entity -> entity != this && entity.isAlive() && isWithinExplosionRadius(entity, witherRadius)
+            ).forEach(entity -> entity.addEffect(new MobEffectInstance(
+                    MobEffects.WITHER,
+                    witherDuration,
+                    witherAmplifier
+            )));
+        }
+
+        super.explode();
+    }
+
+    /**
+     * Spawns smoke particles after the explosion.
+     * Wither application has already been handled in explode().
      */
     @Override
     protected void createCustomExplosionEffects() {
@@ -185,36 +226,7 @@ public class WitherCreeperEntity extends AbstractVariantCreeper {
             return;
         }
 
-        // Get explosion parameters
         float radius = this.getExplosionRadius();
-        int witherDuration = CreepingCreepersConfig.WITHER_CREEPER_WITHER_DURATION.get();
-        int witherAmplifier = CreepingCreepersConfig.WITHER_CREEPER_WITHER_AMPLIFIER.get();
-
-        // Find all living entities in explosion radius
-        AABB explosionBox = new AABB(
-                this.getX() - radius, this.getY() - radius, this.getZ() - radius,
-                this.getX() + radius, this.getY() + radius, this.getZ() + radius
-        );
-
-        List<LivingEntity> affectedEntities = serverLevel.getEntitiesOfClass(
-                LivingEntity.class,
-                explosionBox,
-                entity -> entity != this && entity.isAlive()
-        );
-
-        // Apply Wither effect to all affected entities
-        for (LivingEntity entity : affectedEntities) {
-            // Check actual distance (not just bounding box)
-            if (this.distanceTo(entity) <= radius) {
-                entity.addEffect(new MobEffectInstance(
-                        MobEffects.WITHER,
-                        witherDuration,
-                        witherAmplifier
-                ));
-            }
-        }
-
-        // Spawn smoke particles in a sphere around the explosion (batched into single packet)
         int particleCount = (int) (radius * PARTICLES_PER_RADIUS_UNIT);
         serverLevel.sendParticles(
                 ParticleTypes.SMOKE,
@@ -225,6 +237,23 @@ public class WitherCreeperEntity extends AbstractVariantCreeper {
                 radius * 0.5, radius * 0.5, radius * 0.5,
                 0.05
         );
+    }
+
+    /**
+     * Checks whether any part of an entity's bounding box is within the
+     * explosion radius. This mirrors vanilla explosion hit detection, which
+     * uses bounding box proximity rather than feet-to-feet distance.
+     *
+     * @param entity The entity to test
+     * @param radius The explosion radius
+     * @return true if the entity's bounding box is within the sphere
+     */
+    private boolean isWithinExplosionRadius(LivingEntity entity, float radius) {
+        AABB box = entity.getBoundingBox();
+        double dx = Math.max(0, Math.max(this.getX() - box.maxX, box.minX - this.getX()));
+        double dy = Math.max(0, Math.max(this.getY() - box.maxY, box.minY - this.getY()));
+        double dz = Math.max(0, Math.max(this.getZ() - box.maxZ, box.minZ - this.getZ()));
+        return dx * dx + dy * dy + dz * dz <= (double) radius * radius;
     }
 
     // =========================================================================
