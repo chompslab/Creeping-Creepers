@@ -38,7 +38,9 @@ import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.level.Level;
@@ -415,5 +417,26 @@ public abstract class AbstractVariantCreeper extends Monster {
      */
     public int getSwell() {
         return this.swell;
+    }
+
+    // =========================================================================
+    // COMBAT
+    // =========================================================================
+
+    /**
+     * Prevents all melee damage from creeper variants.
+     *
+     * This is the same approach vanilla Minecraft's Creeper uses.
+     * MeleeAttackGoal calls this method when the mob is within melee range,
+     * but creepers deal damage through explosions, not melee attacks.
+     * Returning true signals "attack handled" without dealing any damage.
+     *
+     * @param level The server level
+     * @param target The entity being attacked
+     * @return true always (attack is "handled" but no damage is dealt)
+     */
+    @Override
+    public boolean doHurtTarget(ServerLevel level, Entity target) {
+        return true;
     }
 }

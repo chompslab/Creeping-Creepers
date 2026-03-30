@@ -248,7 +248,6 @@ public class EnderCreeperEntity extends AbstractVariantCreeper {
         return Monster.createMonsterAttributes()
                 .add(Attributes.MAX_HEALTH, 20.0)  // Default from config
                 .add(Attributes.MOVEMENT_SPEED, 0.28)  // Default from config
-                .add(Attributes.ATTACK_DAMAGE, 7.0)  // Default from config
                 .add(Attributes.FOLLOW_RANGE, 64.0);
     }
     
@@ -306,13 +305,8 @@ public class EnderCreeperEntity extends AbstractVariantCreeper {
         // Priority 5: Move toward target (standard creeper chase behavior)
         // This makes the creeper walk/run towards the player after teleporting
         // or when already within engagement range
-        this.goalSelector.addGoal(5, new MeleeAttackGoal(this, 1.0, false) {
-            @Override
-            protected void checkAndPerformAttack(LivingEntity target) {
-                // Don't actually melee attack - creepers explode instead
-                // The swell goal handles the explosion
-            }
-        });
+        // Melee damage is prevented by doHurtTarget() in AbstractVariantCreeper
+        this.goalSelector.addGoal(5, new MeleeAttackGoal(this, 1.0, false));
 
         // Priority 6: Wander around when idle
         this.goalSelector.addGoal(6, new WaterAvoidingRandomStrollGoal(this, WANDER_SPEED, 0.0F));
@@ -1193,6 +1187,11 @@ public class EnderCreeperEntity extends AbstractVariantCreeper {
             BlockPos pos,
             RandomSource random
     ) {
+        // Check if spawning is disabled in config
+        if (!CreepingCreepersConfig.ENDER_CREEPER_SPAWN_ENABLED.get()) {
+            return false;
+        }
+
         // Use vanilla's monster spawn rules for light checks — same as Enderman.
         // This correctly handles sky light in all dimensions (Overworld day/night,
         // Nether with no sky, End with hasSkyLight=true but dark sky).

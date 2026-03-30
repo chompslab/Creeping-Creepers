@@ -296,6 +296,11 @@ public class WitherCreeperEntity extends AbstractVariantCreeper {
             BlockPos pos,
             RandomSource random
     ) {
+        // Check if spawning is disabled in config
+        if (!CreepingCreepersConfig.WITHER_CREEPER_SPAWN_ENABLED.get()) {
+            return false;
+        }
+
         // Must be in the Nether dimension
         if (level.getLevel().dimension() != Level.NETHER) {
             return false;

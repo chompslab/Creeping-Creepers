@@ -73,13 +73,6 @@ public class CreepingCreepersConfig {
      */
     public static final ForgeConfigSpec.DoubleValue ENDER_CREEPER_SPEED;
     
-    /**
-     * Attack damage attribute (currently unused - melee attack is disabled).
-     * The MeleeAttackGoal is used for pathfinding only; the creeper explodes instead.
-     * Default: 7.0 (same as Enderman)
-     */
-    public static final ForgeConfigSpec.DoubleValue ENDER_CREEPER_ATTACK_DAMAGE;
-    
     // =========================================================================
     // ENDER CREEPER - EXPLOSION
     // =========================================================================
@@ -134,6 +127,13 @@ public class CreepingCreepersConfig {
     // ENDER CREEPER - SPAWNING
     // =========================================================================
     // Controls natural spawning conditions.
+
+    /**
+     * Whether the Ender Creeper can spawn naturally in the world.
+     * Spawn eggs still work when disabled.
+     * Default: true
+     */
+    public static final ForgeConfigSpec.BooleanValue ENDER_CREEPER_SPAWN_ENABLED;
 
     // =========================================================================
     // WITHER CREEPER - STATS
@@ -195,6 +195,18 @@ public class CreepingCreepersConfig {
      * Default: 6 blocks
      */
     public static final ForgeConfigSpec.DoubleValue WITHER_CREEPER_CAT_FEAR_RANGE;
+
+    // =========================================================================
+    // WITHER CREEPER - SPAWNING
+    // =========================================================================
+    // Controls natural spawning conditions.
+
+    /**
+     * Whether the Wither Creeper can spawn naturally in the world.
+     * Spawn eggs still work when disabled.
+     * Default: true
+     */
+    public static final ForgeConfigSpec.BooleanValue WITHER_CREEPER_SPAWN_ENABLED;
 
     // =========================================================================
     // NETHER CREEPER - STATS
@@ -301,6 +313,18 @@ public class CreepingCreepersConfig {
     public static final ForgeConfigSpec.IntValue NETHER_CREEPER_COLD_DAMAGE_INTERVAL;
 
     // =========================================================================
+    // NETHER CREEPER - SPAWNING
+    // =========================================================================
+    // Controls natural spawning conditions.
+
+    /**
+     * Whether the Nether Creeper can spawn naturally in the world.
+     * Spawn eggs still work when disabled.
+     * Default: true
+     */
+    public static final ForgeConfigSpec.BooleanValue NETHER_CREEPER_SPAWN_ENABLED;
+
+    // =========================================================================
     // STATIC INITIALIZATION BLOCK
     // =========================================================================
     // This is where all config values are defined with their defaults and ranges.
@@ -321,10 +345,6 @@ public class CreepingCreepersConfig {
         ENDER_CREEPER_SPEED = BUILDER
                 .comment("Movement speed (vanilla Creeper: 0.25, Enderman: 0.3)")
                 .defineInRange("movement_speed", 0.28, 0.0, 2.0);
-        
-        ENDER_CREEPER_ATTACK_DAMAGE = BUILDER
-                .comment("Melee attack damage (Enderman-style attack)")
-                .defineInRange("attack_damage", 7.0, 0.0, 100.0);
         
         BUILDER.pop(); // End stats
         
@@ -362,6 +382,15 @@ public class CreepingCreepersConfig {
                 .define("afraid_of_cats", true);
         
         BUILDER.pop(); // End environmental
+
+        // --- Spawning Section ---
+        BUILDER.comment("Spawning Settings").push("spawning");
+
+        ENDER_CREEPER_SPAWN_ENABLED = BUILDER
+                .comment("Whether the Ender Creeper can spawn naturally (spawn eggs still work when disabled)")
+                .define("spawn_enabled", true);
+
+        BUILDER.pop(); // End spawning
 
         BUILDER.pop(); // End ender_creeper
 
@@ -418,6 +447,15 @@ public class CreepingCreepersConfig {
                 .defineInRange("cat_fear_range", 6.0, 1.0, 32.0);
 
         BUILDER.pop(); // End targeting
+
+        // --- Spawning Section ---
+        BUILDER.comment("Spawning Settings").push("spawning");
+
+        WITHER_CREEPER_SPAWN_ENABLED = BUILDER
+                .comment("Whether the Wither Creeper can spawn naturally (spawn eggs still work when disabled)")
+                .define("spawn_enabled", true);
+
+        BUILDER.pop(); // End spawning
 
         BUILDER.pop(); // End wither_creeper
 
@@ -500,6 +538,15 @@ public class CreepingCreepersConfig {
                 .defineInRange("cold_damage_interval", 20, 1, 200);
 
         BUILDER.pop(); // End temperature
+
+        // --- Spawning Section ---
+        BUILDER.comment("Spawning Settings").push("spawning");
+
+        NETHER_CREEPER_SPAWN_ENABLED = BUILDER
+                .comment("Whether the Nether Creeper can spawn naturally (spawn eggs still work when disabled)")
+                .define("spawn_enabled", true);
+
+        BUILDER.pop(); // End spawning
 
         BUILDER.pop(); // End nether_creeper
 
