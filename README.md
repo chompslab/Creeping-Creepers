@@ -8,9 +8,9 @@ A Minecraft Forge mod that adds unique Creeper variants with special abilities t
 
 ## Requirements
 
-- **Minecraft**: 1.21.11
+- **Minecraft**: 1.21.11+
 - **Forge**: 61.0.6+
-- **Java**: 21+
+- **Java**: 25
 
 ## Installation
 
@@ -150,3 +150,9 @@ MIT License
 ## Credits
 
 Developed by Chompslabs
+
+Thank you to my testers! Y'all the goats. 🐐
+
+[Elephant](https://x.com/EIephantt)🐘
+[Undeadtech]💀
+
