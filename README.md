@@ -8,8 +8,8 @@ A Minecraft Forge mod that adds unique Creeper variants with special abilities t
 
 ## Requirements
 
-- **Minecraft**: 1.21.11+
-- **Forge**: 61.0.6+
+- **Minecraft**: 26.1
+- **Forge**: 62.0.2
 - **Java**: 25
 
 ## Installation
