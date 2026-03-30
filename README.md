@@ -32,7 +32,6 @@ A terrifying hybrid combining the explosive nature of Creepers with the teleport
 - Teleports toward targets when farther than 13 blocks away, closing the gap instantly
 - Dodges all projectiles by teleporting — arrows and other projectiles cannot hit it
 - When hit by melee attacks, has a 50% chance to teleport away
-- **Stops moving and holds position while its fuse is counting down** — like a vanilla Creeper
 - Flees from cats and ocelots within 6 blocks
 - Takes damage from water, rain, and splash water bottles (like an Enderman)
 - Prevents nearby players from sleeping
@@ -112,7 +111,6 @@ A dark creeper that lurks in the Nether and inflicts the Wither effect on explos
 
 **Behavior:**
 - Behaves like a standard Creeper — chases players and explodes on approach
-- Requires line of sight to begin swelling (unlike vanilla Creepers)
 - Flees from cats and ocelots within 6 blocks
 - Immune to fire and the Wither effect
 - Explosion applies Wither I to all entities within the blast radius for 10 seconds
@@ -149,7 +147,7 @@ MIT License
 
 ## Credits
 
-Developed by Chompslabs
+Developed by Chompslabs🐊
 
 Thank you to my testers! Y'all the goats. 🐐
 
