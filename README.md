@@ -1,6 +1,6 @@
 # Creeping Creepers
 
-A Minecraft Forge mod that adds unique Creeper variants with special abilities to your world.
+A [Minecraft Forge mod](https://www.curseforge.com/minecraft/mc-mods/creeping-creepers) that adds unique Creeper variants with special abilities to your world.
 
 ## About
 
@@ -146,9 +146,6 @@ All values are configurable in `config/creepingcreepers-common.toml`. The config
 MIT License
 
 ## Credits
-
-Developed by Chompslabs🐊
-
 Thank you to my testers! Y'all the goats. 🐐
 
 [Elephant](https://x.com/EIephantt)🐘
